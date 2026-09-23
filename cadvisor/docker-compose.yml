@@ -1,0 +1,59 @@
+services:
+  cadvisor:
+    image: ghcr.io/google/cadvisor:latest
+    container_name: cadvisor
+    hostname: cadvisor
+    restart: always
+    pull_policy: always
+    privileged: true
+    pid: "host"
+    cgroup: host
+    ports:
+      - "9191:8080"
+    command:
+      - '-docker_only=true'
+      - '-housekeeping_interval=15s'
+      - '-disable_metrics=disk,tcp,udp,referenced_memory'
+    volumes:
+      - /:/rootfs:ro,rslave
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      - /var/lib/docker:/var/lib/docker:ro,rslave
+      - /var/lib/docker:/rootfs/var/lib/docker:ro,rslave
+      - /dev/disk:/dev/disk:ro
+    devices:
+      - /dev/kmsg:/dev/kmsg # Descomenta esto si necesitas monitorear eventos OOM a nivel de kernel
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    hostname: node-exporter
+    restart: always
+    pull_policy: always
+    pid: "host"
+    ports:
+      - "9100:9100"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+
+  promtail:
+    image: grafana/promtail:latest
+    container_name: promtail
+    container_name: promtail
+    hostname: node-exporter
+    restart: always
+    pull_policy: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - ./promtail-config.yaml:/etc/promtail/config.yml:ro
+    command: -config.file=/etc/promtail/config.yml

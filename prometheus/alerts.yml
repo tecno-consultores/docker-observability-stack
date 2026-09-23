@@ -1,0 +1,18 @@
+groups:
+  - name: infraestructura
+    rules:
+      - alert: ServidorCaido
+        expr: up{job="node_exporter"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "El servidor {{ $labels.instance }} está caído."
+
+      - alert: WebCaida
+        expr: probe_success == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "La página {{ $labels.instance }} no responde."
