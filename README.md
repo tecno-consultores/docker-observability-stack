@@ -50,7 +50,7 @@ Para que Prometheus pueda leer la salud interna del motor de Docker en los servi
 
 El stack remoto recopila toda la información de la máquina y la expone (o envía) al servidor central.
 
-1. Transfiere la carpeta `nodo_remoto/` a tu servidor destino.
+1. Transfiere la carpeta `cadvisor/` a tu servidor destino.
 2. Abre el archivo `promtail-config.yaml` y asegúrate de cambiar la URL de Loki para que apunte a la IP de tu Servidor Central: `http://IP_CENTRAL:3100/loki/api/v1/push`.
 3. Levanta los agentes (cAdvisor en el puerto `9191`, Node Exporter en `9100` y Promtail):
    ```bash
