@@ -48,7 +48,6 @@ services:
   promtail:
     image: grafana/promtail:latest
     container_name: promtail
-    container_name: promtail
     hostname: node-exporter
     restart: always
     pull_policy: always
